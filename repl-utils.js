@@ -30,7 +30,7 @@ function use(id, options) {
   options = options || {}
 
   // Remove module from cache if `reload` is passed.
-  if (options.reload) delete global.require.cache[require.resolve(id)]
+  if (options.reload) delete global.require.cache[global.require.resolve(id)]
 
   // Loading a module.
   imports = global.require(id)
