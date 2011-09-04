@@ -6,12 +6,13 @@
 "use strict"
 
 doc: "Utilities for REPL"
-version: "0.0.1"
+version: "0.0.3"
 author: "Irakli Gozalishivili"
 
-try {
-  global = module.parent.exports.repl.context
-} catch (e) {}
+var Script = require('vm').Script
+
+// Try to override local global with a context of the repl.
+try { global = module.parent.exports.repl.context } catch (e) {}
 
 function use(id, options) {
   /**
@@ -25,7 +26,7 @@ function use(id, options) {
   use('fs', { reload: true })             // reloads module
   **/
 
-  var imports, only, as
+  var imports, imported, only, as
 
   options = options || {}
 
@@ -34,11 +35,18 @@ function use(id, options) {
 
   // Loading a module.
   imports = global.require(id)
+  imported = {}
   only = options.only || Object.keys(imports)
   as = options.as || {}
 
-  only.forEach(function(name) { global[as[name] || name] = imports[name] })
-}
-global.use = use
+  only.forEach(function(name, alias) {
+    alias = as[name] || name
+    Script.runInContext('delete ' + alias + ';', global)
+    imported[alias] = global[alias] = imports[name]
+  })
 
-global.doc = require('doc').doc
+  return imported
+}
+global.use = exports.use = use
+
+global.doc = exports.doc = require('doc').doc
