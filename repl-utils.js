@@ -9,7 +9,9 @@ doc: "Utilities for REPL"
 version: "0.0.1"
 author: "Irakli Gozalishivili"
 
-try { exports = module.parent.exports.repl.context } catch (e) {}
+try {
+  global = module.parent.exports.repl.context
+} catch (e) {}
 
 function use(id, options) {
   /**
@@ -28,15 +30,15 @@ function use(id, options) {
   options = options || {}
 
   // Remove module from cache if `reload` is passed.
-  if (options.reload) delete require.cache[require.resolve(id)]
+  if (options.reload) delete global.require.cache[require.resolve(id)]
 
   // Loading a module.
-  imports = require(id)
+  imports = global.require(id)
   only = options.only || Object.keys(imports)
   as = options.as || {}
 
-  only.forEach(function(name) { context[as[name] || name] = imports[name] })
+  only.forEach(function(name) { global[as[name] || name] = imports[name] })
 }
-exports.use = use
+global.use = use
 
-exports.doc = require('doc').doc
+global.doc = require('doc').doc
