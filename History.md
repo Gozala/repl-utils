@@ -1,5 +1,8 @@
 # Changes #
 
+## 0.0.3 / 2011-09-04 ##
+
+  - Bug fix (Fixing use with `reload` flag).
 
 ## 0.0.2 / 2011-09-04 ##
 
