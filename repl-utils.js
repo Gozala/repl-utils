@@ -6,13 +6,12 @@
 "use strict"
 
 doc: "Utilities for REPL"
-version: "0.0.3"
+version: "0.0.4"
 author: "Irakli Gozalishivili"
 
-var Script = require('vm').Script
-
-// Try to override local global with a context of the repl.
-try { global = module.parent.exports.repl.context } catch (e) {}
+var repl = require('repl')
+var vm = require('vm')
+var doc = require('doc')
 
 function use(id, options) {
   /**
@@ -31,22 +30,27 @@ function use(id, options) {
   options = options || {}
 
   // Remove module from cache if `reload` is passed.
-  if (options.reload) delete global.require.cache[global.require.resolve(id)]
+  if (options.reload) delete this.require.cache[this.require.resolve(id)]
 
   // Loading a module.
-  imports = global.require(id)
+  imports = this.require(id)
   imported = {}
   only = options.only || Object.keys(imports)
   as = options.as || {}
 
   only.forEach(function(name, alias) {
     alias = as[name] || name
-    Script.runInContext('delete ' + alias + ';', global)
-    imported[alias] = global[alias] = imports[name]
-  })
+    vm.runInContext('delete this["' + alias + '"];', this)
+    imported[alias] = this[alias] = imports[name]
+  }, this)
 
   return imported
 }
-global.use = exports.use = use
 
-global.doc = exports.doc = require('doc').doc
+exports.main = function main() {
+  var context = repl.start().context
+  context.use = use.bind(context)
+  context.doc = doc
+}
+
+if (require.main === module) exports.main()
