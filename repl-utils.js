@@ -35,7 +35,7 @@ function Use(context) {
       delete context.require.cache[context.require.resolve(id)]
 
     // Loading a module.
-    imports = this.require(id)
+    imports = context.require(id)
     imported = {}
     only = options.only || Object.keys(imports)
     as = options.as || {}
