@@ -30,9 +30,15 @@ To use this repl-utilitis form your package add it to your `devDependencies` and
 
 ## Usage
 
-```js
-require('repl-utils') // Now you're ready to go!
+From your package dir run
 
+```sh
+npm run repl
+```
+
+And from the repl you'll be able to use:
+
+```js
 doc(doc) // try this:
 
 /*
