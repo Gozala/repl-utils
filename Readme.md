@@ -1,18 +1,34 @@
-# repl-utils #
+# repl-utils
 
-REPL utilities. This package provides additional utilities for working with node
-REPL:
+REPL utilities. This package provides additional utilities when working with
+node projects in repl. At the moment two helper function are exposed:
 
 - `doc` prints documentation for the given function if documented as defined in
   expected format (https://github.com/Gozala/doc)
 - `use` requires given module and puts all it's exports into the scope (For
   details try `doc(use)`)
 
-## Install ##
+# Setup
 
-    npm install repl-utils
+To use this repl-utilitis form your package add it to your `devDependencies` and
+**optionally** add npm script `"repl": "node node_modules/repl-utils"`. Example
+`package.json` file will look as follows:
 
-## Usage ##
+```json
+{
+  "name": "my-package",
+  "version": "0.0.1",
+  "description": "my package description",
+  "devDependencies": {
+    "repl-utils": ">=1.0.0"
+  },
+  "scripts": {
+    "repl": "node node_modules/repl-utils"
+  }
+}
+```
+
+## Usage
 
 ```js
 require('repl-utils') // Now you're ready to go!
