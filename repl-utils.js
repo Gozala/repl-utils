@@ -13,43 +13,46 @@ var repl = require('repl')
 var vm = require('vm')
 var doc = require('doc').doc
 
-function use(id, options) {
-  /**
-  Like `require`, but also copies exports from the given module to the current
-  context. Optionally `options` can be passed to limit imports.
+function Use(context) {
+  return function use(id, options) {
+    /**
+    Like `require`, but also copies exports from the given module to the current
+    context. Optionally `options` can be passed to limit imports.
 
-  Usage:
-  use('fs')
-  use('fs', { only: [ 'readFile' ] })     // only imports readFile
-  use('fs', { as: { writeFile: write })   // imports fs.writeFile as write
-  use('fs', { reload: true })             // reloads module
-  **/
+    Usage:
+    use('fs')
+    use('fs', { only: [ 'readFile' ] })     // only imports readFile
+    use('fs', { as: { writeFile: write })   // imports fs.writeFile as write
+    use('fs', { reload: true })             // reloads module
+    **/
 
-  var imports, imported, only, as
+    var imports, imported, only, as
 
-  options = options || {}
+    options = options || {}
 
-  // Remove module from cache if `reload` is passed.
-  if (options.reload) delete this.require.cache[this.require.resolve(id)]
+    // Remove module from cache if `reload` is passed.
+    if (options.reload)
+      delete context.require.cache[context.require.resolve(id)]
 
-  // Loading a module.
-  imports = this.require(id)
-  imported = {}
-  only = options.only || Object.keys(imports)
-  as = options.as || {}
+    // Loading a module.
+    imports = this.require(id)
+    imported = {}
+    only = options.only || Object.keys(imports)
+    as = options.as || {}
 
-  only.forEach(function(name, alias) {
-    alias = as[name] || name
-    vm.runInContext('delete this["' + alias + '"];', this)
-    imported[alias] = this[alias] = imports[name]
-  }, this)
+    only.forEach(function onEach(name, alias) {
+      alias = as[name] || name
+      vm.runInContext('delete this["' + alias + '"];', context)
+      imported[alias] = context[alias] = imports[name]
+    })
 
-  return imported
+    return imported
+  }
 }
 
 exports.main = function main() {
   var context = repl.start().context
-  context.use = use.bind(context)
+  context.use = Use(context)
   context.doc = doc
 }
 
