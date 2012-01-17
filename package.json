@@ -1,7 +1,7 @@
 {
   "name": "repl-utils",
   "id": "repl-utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "REPL utils",
   "keywords": [ "repl", "utils" ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
