@@ -1,7 +1,7 @@
 {
   "name": "repl-utils",
   "id": "repl-utils",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "REPL utils",
   "keywords": [ "repl", "utils" ],
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
@@ -12,15 +12,12 @@
     "web": "https://github.com/Gozala/repl-utils"
   },
   "bugs": {
-    "web": "http://github.com/Gozala/repl-utils/issues/"
+    "url": "http://github.com/Gozala/repl-utils/issues/"
   },
   "dependencies": {
     "doc": ">=0.0.2"
   },
   "main": "./repl-utils.js",
-  "scripts": {
-    "install": "mkdir -p ~/.node_modules && ln -s $(pwd) ~/.node_modules/repl-utils"
-  },
   "licenses": [{
     "type" : "MIT",
     "url" : "http://jeditoolkit.com/LICENSE"
