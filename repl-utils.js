@@ -11,7 +11,7 @@ author: "Irakli Gozalishivili"
 
 var repl = require('repl')
 var vm = require('vm')
-var doc = require('doc')
+var doc = require('doc').doc
 
 function use(id, options) {
   /**
