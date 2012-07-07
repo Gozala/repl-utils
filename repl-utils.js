@@ -51,7 +51,7 @@ function Use(context) {
 }
 
 exports.main = function main() {
-  var context = repl.start().context
+  var context = repl.start('> ').context
   context.use = Use(context)
   context.doc = doc
 }
