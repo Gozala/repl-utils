@@ -13,46 +13,56 @@ var repl = require('repl')
 var vm = require('vm')
 var doc = require('doc').doc
 
-function Use(context) {
-  return function use(id, options) {
-    /**
-    Like `require`, but also copies exports from the given module to the current
-    context. Optionally `options` can be passed to limit imports.
+// Define a shortcut for `Array.prototype.slice.call`.
+var unbind = Function.call.bind(Function.bind, Function.call)
+var slice = Array.slice || unbind(Array.prototype.slice)
 
-    Usage:
-    use('fs')
-    use('fs', { only: [ 'readFile' ] })     // only imports readFile
-    use('fs', { as: { writeFile: write })   // imports fs.writeFile as write
-    use('fs', { reload: true })             // reloads module
-    **/
+exports.doc = doc
 
-    var imports, imported, only, as
+function use(id, options) {
+  /**
+  Like `require`, but also copies exports from the given module to the current
+  context. Optionally `options` can be passed to limit imports.
 
-    options = options || {}
+  Usage:
+  use('fs')
+  use('fs', { only: [ 'readFile' ] })       // only imports readFile
+  use('fs', { as: { writeFile: 'write' })   // imports fs.writeFile as write
+  use('fs', { reload: true })               // reloads module
+  use('fs', { reload: true, all: true })    // reloads all modules
+  **/
 
-    // Remove module from cache if `reload` is passed.
-    if (options.reload)
-      delete context.require.cache[context.require.resolve(id)]
+  var imports, imported, only, as
+  options = options || {}
 
-    // Loading a module.
-    imports = context.require(id)
-    imported = {}
-    only = options.only || Object.keys(imports)
-    as = options.as || {}
-
-    only.forEach(function onEach(name, alias) {
-      alias = as[name] || name
-      vm.runInContext('delete this["' + alias + '"];', context)
-      imported[alias] = context[alias] = imports[name]
-    })
-
-    return imported
+  // Remove module from cache if `reload` is passed.
+  if (options.reload) {
+    if (options.all) global.require.cache = {}
+    else delete global.require.cache[global.require.resolve(id)]
   }
+
+  // Loading a module.
+  imports = global.require(id)
+  imported = {}
+  only = options.only || Object.keys(imports)
+  as = options.as || {}
+
+  only.forEach(function onEach(name, alias) {
+    alias = as[name] || name
+    vm.runInThisContext('delete this["' + alias + '"];')
+    imported[alias] = global[alias] = imports[name]
+  })
+
+  return imported
 }
+exports.use = use
 
 exports.main = function main() {
-  var context = repl.start('> ').context
-  context.use = Use(context)
+  var context = repl.start({
+    useGlobal: true,
+    ignoreUndefined: false
+  }).context
+  context.use = use
   context.doc = doc
 }
 
