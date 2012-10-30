@@ -43,6 +43,10 @@ function use(id, options) {
 
   // Loading a module.
   imports = global.require(id)
+
+  // If module only exports function just return it.
+  if (typeof(imports) === "function") return imports
+
   imported = {}
   only = options.only || Object.keys(imports)
   as = options.as || {}
